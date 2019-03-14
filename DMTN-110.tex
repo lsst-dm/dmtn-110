@@ -1,0 +1,54 @@
+\documentclass[DM,authoryear,toc,lsstdraft]{lsstdoc}
+% lsstdoc documentation: https://lsst-texmf.lsst.io/lsstdoc.html
+
+% Package imports go here.
+
+% Local commands go here.
+
+% To add a short-form title:
+\title{Conda Environment Proposal for Science Pipelines}
+
+% Optional subtitle
+% \setDocSubtitle{A subtitle}
+
+\author{%
+Gabriele Comoretto
+}
+
+\setDocRef{DMTN-110}
+
+\date{\today}
+
+% Optional: name of the document's curator
+% \setDocCurator{The Curator of this Document}
+
+\setDocAbstract{%
+It is proposed  an improved way to deal with conda environment when building the science pipeline software.
+}
+
+% Change history defined here.
+% Order: oldest first.
+% Fields: VERSION, DATE, DESCRIPTION, OWNER NAME.
+% See LPM-51 for version number policy.
+\setDocChangeRecord{%
+  \addtohist{}{2019-03-01}{First draft}{Gabriele Comoretto}
+}
+
+\begin{document}
+
+\maketitle
+
+
+\input{body}
+
+\newpage
+\appendix
+
+\section{References} \label{sec:bib}
+\bibliography{lsst,lsst-dm,refs_ads,refs,books}
+
+
+%Make sure lsst-texmf/bin/generateAcronyms.py is in your path
+\section{Acronyms used in this document}\label{sec:acronyms}
+\input{acronyms.tex}
+\end{document}
