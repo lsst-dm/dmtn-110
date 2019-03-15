@@ -24,9 +24,9 @@ This document uses certain terms which are often overloaded -  in this section w
 
 \subsubsection{Environment} \label{sec:envdef}
 
-An environment is a set of libraries, executable and configurations, that are predefined for a specific context or function.
+An environment is a set of libraries, executables and configurations, that are predefined for a specific context or function.
 
-An environment is usually needed in following contexts:
+An environment is usually needed in the following contexts:
 
 \begin{itemize}
 \item software development: the environment includes all libraries and tools required to build and debug a software product
@@ -36,7 +36,7 @@ An environment is usually needed in following contexts:
 
 These are the most common uses of an environment. Additional scenarios can be identified depending on the needs.
 
-In some cases, for simplicity, the same environment is used in development, tests and operations, but this shall not justify the inclusion of the environment definition in the Software Product itself.
+In some cases, for simplicity, the same environment is used in development, tests and operations, but this does not justify the inclusion of the environment definition in the Software Product itself.
 
 
 \subsubsection{Software Product} \label{sec:swdef}
@@ -50,7 +50,7 @@ a Github \textit{metapackage} is used to identify the SW Product.
 All git packages of the SW product will be dependencies in a Github \textit{metapackage} and released at the same time.
 A git package shall be related only to one Software Product.
 
-The following elements shall never be part of a Software Product:
+The following elements should not be part of a Software Product:
 
 \begin{itemize}
 \item build tools, otherwise we will have build tools deployed in operations.
