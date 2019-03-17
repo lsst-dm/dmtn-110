@@ -3,11 +3,11 @@
 The proposal made in this document is oriented to have a more functional approach in the environment management for science pipelines builds.
 
 The benefits that can be obtained by implementing this proposal are mainly for developers, who will have more control over the environments they are using. 
-This will permit a more dynamic evolution of the used environment, therefore to change more often packages available in the public conda channels. This is the case with \textit{numpy} where new releases are usually binary incompatible.
+This will permit a more dynamic evolution of the used environment, therefore to change more often packages available in the public Conda channels. This is the case with \textit{numpy} where new releases are usually binary incompatible.
 
 The release process will  benefit as the global build time for the science pipelines  will be reduced. 
-Reduced build times should allow us to make more frequent releases. 
-This will be very important during commissioning and the first operations, when multiple releases per day can be requested.
+Reduced build times allows more frequent releases. 
+This will be very important during commissioning and first operations phase, when multiple releases per day can be needed.
 
 In this moment there are a few \textit{stubs} as EUPS package that are not always working as expected.
 Implementing this proposal will remove these packages and the overall build process will be more robust.
@@ -32,7 +32,7 @@ An environment is usually needed in the following contexts:
 \begin{itemize}
 \item software development: the environment includes all libraries and tools required to build and debug a software product
 \item software test and verification: the environment includes, on top of build and debug tools, additional tools to permit/facilitate the testing and validation activities.
-\item operations: the environment shall include only tools required for the execution of operational product. It shall not contain any build or debug tool. It shall be optimized for the operational activities. \footnote{In case a problem is found in operation the first thing to do is to replicate it in a different environment, where also debug and further analysis is possible.}
+\item operations: the environment shall include only tools required for the execution of the operational product. It shall not contain any build or debug tool. It shall be optimized for the operational activities. \footnote{In case a problem is found in operation the first thing to do is to replicate it in a different environment, where also debug and further analysis is possible.}
 \end{itemize}
 
 These are the most common uses of an environment. Additional scenarios can be identified depending on the needs.
@@ -50,14 +50,13 @@ The following activities are done on a SW Product:
 \item test activities, usually unit tests and system test
 \item release activities
 \item packaging activities
-\item operations activities, stand alone, in an operational pipeline, or as part of a service. Some SW Products are libraries, therefore are not used operationally directly, but used as dependencies by other Software Products.
+\item operational activities, in stand alone, in an operational pipeline, or as part of a service. Some SW Products are libraries, therefore are not operationally, but used as dependencies by other Software Products.
 \end{itemize}
-%Releases are made of  Software Products (\secref{sec:defrelease}).
 
 A Software Product shall correspond to a single repository (git package). All its dependences are also a Software Product and therefore released separately. However, this is not the case for DM.
 
-Where a Software Product is comprised of multiple git packages, a GitHub \textit{metapackage} is used to identify the Software Product.
-All git packages of the Software Product will be dependencies in a GitHub \textit{metapackage} and released at the same time.
+In DM, where a Software Product is comprised of multiple git packages, a GitHub \textit{metapackage} is used to identify the Software Product.
+All git packages composing the Software Product are dependencies in a GitHub \textit{metapackage} and released at the same time.
 In this case, a git package shall be related only to one Software Product, and it is not by himself a Software Product.
 
 The following elements should not be part of a Software Product:
@@ -85,14 +84,14 @@ The software release is a monolithic snapshot of the Software Product to be used
 
 \subsection{Third Party Packages}
 
-3rd party packages are those packages that are not developed in DM, and follow their own documentation and release process.
+Third party packages are those packages that are not developed in DM, and follow their own documentation and release process.
 
 
 \newpage
 \section{Current Implementation} \label{sec:actual}
 
-\subsection{Development Environment Preparation} \label{sec:envset} 
-As of March 2019, the following steps are used to configure a build environment for the Science Pipelines:
+\subsection{Development Workspace Preparation} \label{sec:envset} 
+As of March 2019, the following steps are used to configure a build workspace for the Science Pipelines:
 
 \begin{itemize}
 \item clone the GitHub package \url{https://github.com/lsst/lsstsw}
@@ -103,22 +102,43 @@ As of March 2019, the following steps are used to configure a build environment 
 This will make available locally all tooling required to build the science pipelines source code using the command \texttt{rebuild <-r ref> lsst\_distrib}.
 
 The environment deployed and activate using the above steps corresponds to a fixed revision fo the \textit{scipipe\_conda\_env} git package.
-This revision is hardcoded in the \textit{lsstsw} build tool. It is also hardcoded in the \textit{newinstall.sh} distribution script and in the continuous integration scripts versioned in the \textit{jenkins-dm-jobs} GitHub repository.
+This revision is hardcoded in the \textit{lsstsw} build tool. It is also hardcoded in the continuous integration scripts versioned in the \textit{jenkins-dm-jobs} GitHub repository.
+
+
+\subsection{Science Pipelines Distribution} \label{sec:distrib}
+
+Following the instructions provided in \url{pipelines.lsst.io}, it is possible to configure a build workspace using the \textit{newinstall.sh} script.
+This script is available in the \textit{lsst/lsst} git repository and it is tagged weekly together with the Science Pipelines weekly build.
+
+The instantiation of the work space is described in the \url{pipelines.lsst.io} documentation page, and can be summarized as follows:
+
+\begin{itemize}
+\item download from GitHub the \textit{newinstall.sh} script in an empty folder.
+\item execute the script; if the options \textit{-ct} are give, binary packages will be downloaded from EUPS instead of building the source. The execution will create an additional shell script, \textit{loadLSST.bash}, to be execute to activate the Conda environment. The script is generated in different shell flavors also: csh, ksh and zsh.
+\item source the \textit{loadLSST.bash} script in order to activate the environment 
+\end{itemize}
+
+The workspace will be ready to run \texttt{eups distrib install ....} builds.
+
+Note that the Conda environment reference is hardcoded in the \textit{newinstall.sh} script.
+
+The script may have changed from one week to an other.
+This imply that each EUPS weekly build may work only with its corresponding \textit{nrewinstall.sh}.
 
 
 \subsection{Conda Environment Management} \label{sec:condaenv}
 
-The repository $scipipe\_conda\_env$ defines a list of conda packages to be installed in the conda environment.
-These packages are resolved by conda from the default channels.
+The repository $scipipe\_conda\_env$ defines a list of Conda packages to be installed in the Conda environment.
+These packages are resolved by Conda from the default channels.
 
 The $scipipe\_conda\_env$ repository includes two different types of environment definition:
 
 \begin{itemize}
-\item {\bf bleed}: the list of the conda packages that are required by the science pipelines. No version is specified.
-\item {\bf pinned}: the list of all conda packages resolved in the environment. This includes the bleed packages and all required dependencies resolved automatically by conda. The precise resolved version is given for each package listed in the file.
+\item {\bf bleed}: the list of the Conda packages that are required by the science pipelines. No version is specified.
+\item {\bf pinned}: the list of all Conda packages resolved in the environment. This includes the bleed packages and all required dependencies resolved automatically by Conda. The precise resolved version is given for each package listed in the file.
 \end{itemize}
 
-The \textit{pinned} version of the environment definition is the one used to instantiate the environment for the science pipelines build as specified in section \ref{sec:envset}.
+The \textit{pinned} version of the environment definition is the one used to instantiate the environment for the Science Pipelines build as specified in section \ref{sec:envset}.
 
 The \textit{bleed} version is used to update the \textit{pinned} definition to the latest packages version that have been made available in the public conda channels since the previous update.
 The \textit{pinned} file is usually updated every 6 months approximately.
@@ -133,18 +153,18 @@ For the \textit{linux} platform, an extra package is required, \textit{nomkl}\fo
 
 The 17.0 release of the Science Pipelines stack comprises 128 packages.
 
-All packages are rebuilt all the times a new \textit{lsstsw} configuration is done. 
-Each time a release or a release candidate is done, they are rebuilt also, with the effect to slow down considerably the release process.
+All packages are rebuilt all the times a new \textit{lsstsw} development workspace is configured. 
+Each time a release or a release candidate are created, they are rebuilt also, with the effect to slow down considerably the release process.
 
-Many of these packages are 3rd party libraries that are not available in the public conda channels, or that require some changes in order to be used in the science pipelines stack.
+Many of these packages are 3rd party libraries that are not available in the public Conda channels, or that require some changes in order to be used in the Science Pipelines stack.
 
 These packages are not DM software, they are not formally part of the release, and they should be considered as part of the Conda environment.
 
 In order to move these packages to the Conda environment, there are two problems:
 
 \begin{itemize}
-\item create and maintain conda packages suitable for DM usage
-\item dynamically manage the science pipelines conda environment, in order to be able to include and use new versions of the required packages. This is the critical point.
+\item create and maintain Conda packages suitable for DM usage
+\item dynamically manage the Science Pipelines Conda environment, in order to be able to include and use new versions of the required packages. This is the critical point.
 \end{itemize}
 
 See appendix \ref{sec:tomove} for a list of packages proposed to be moved to the conda environment.
@@ -153,7 +173,7 @@ The expected benefits are:
 
 \begin{itemize}
 \item more efficient environment management;
-\item reduced build time and therefore easier to release the science pipelines
+\item reduced build time and therefore easier to release the Science Pipelines
 \item have a more stable build system, since reducing the package to build every time will reduce the possibility of random failures.
 \end{itemize}
 
@@ -163,9 +183,8 @@ The expected benefits are:
 As described in section \ref{sec:actual}, the environment deployed and activated using the actual version of the tooling is hardcoded in a few places.
 
 This implies that, each time the environment is updated, the hardcoded value need to be updated, the tools redeployed, and restart from scratch any build or development activities.
-The main reason of this, is because of incompatibilities between the EUPS builds and the Conda environment, that are not traced by EUPS.
 
-The tools used should be able to deploy and activate different environment, without the need to have it hardcoded.
+The tools used should be able to deploy and activate a different environment, without the need to have it hardcoded.
 
 
 \subsection{Unknown Environment Status} \label{sec:unknown}
@@ -173,7 +192,7 @@ The tools used should be able to deploy and activate different environment, with
 In some cases, the science pipelines build is failing due to some packages misalignment. 
 It is very common to see support requests on \textit{slack} channels, that end up been a problem of Conda environment.
 
-Since a developer is not constraint to use the recommended environment, there should be an easy way to compare the active environment  with a reference one, locally deployed or a reference in \textit{scipipe\_conda\_env}. git package.
+Since a developer is not constraint to use the recommended environment, there should be an easy way to compare the active environment  with a reference one, locally deployed or a reference in \textit{scipipe\_conda\_env} git package.
 
 
 \subsection{Missing Usecases}
@@ -181,13 +200,13 @@ Since a developer is not constraint to use the recommended environment, there sh
 As a result of the problems exposed above, following use cases should be taken in account:
 
 \begin{itemize}
-\item be able to deploy a new conda environment without the need to update and clone lsstsw.
-\item be able to activate different conda environments using a lsstsw command.
-\item be able to check the differences between the active environment and a different one.
-\item record which conda environment has been used for a specific build, and been able to activate it again.
-\item be able to activate the correct environment when installing an eups build using \texttt{eups distrib install}.
+\item be able to deploy a new Conda environment without the need to update and have a new clone of \textit{lsstsw}.
+\item be able to activate different Conda environments using a \textit{lsstsw} command.
+\item be able to check the differences between Conda environments.
+\item record which Conda environment has been used for a specific build, and been able to activate it again.
+\item be able to activate the correct environment before running and EUPS build using \texttt{eups distrib install}.
 \item be able to run a CI build using a specific environment reference.
-\item be able to manage conda packages for 3rd party libraries.
+\item be able to manage Conda packages for some third party libraries that requires light customization.
 \end{itemize}
 
 
@@ -199,8 +218,8 @@ Here follows the proposed changes required to satisfy the usecases from the prev
 \subsection{Define Environment References} \label{sec:envDefine}
 
 The package \textit{scipipe\_conda\_env} to be tagged in GitHub for each weekly and each time an EUPS build is created.
-This will guarantee that each EUPS weekly build will have a corresponding well known Conda environment, identified with the same weekly tag, that can be used for rebuilt them. 
-The SHA1 can be identified also, but shall not be necessary.
+This will guarantee that each EUPS weekly build will have a corresponding well known Conda environment, that can be used for rebuilt them. 
+The Conda environmemt tag shall be in line with the EUPS tag. The SHA1 can be identified also, but should not be necessary.
 
 All changes implemented in the \textit{scipipe\_conda\_env} repository shall follow the usual development process.  
 The tooling improvements proposed bellow, will permit the validation of those changes and include them in the development workflow.
@@ -208,7 +227,7 @@ The tooling improvements proposed bellow, will permit the validation of those ch
 
 \subsection{Use Different Environments in lsstsw Git Package} \label{sec:envActivate}
 
-A new command, or command line option, shall be added to lsstsw to deploy and activate a specific conda environment reference from the \textit{scipipe\_conda\_env} GitHub package.
+A new command, or command line option, shall be added to lsstsw to deploy and activate a specific Conda environment reference from the \textit{scipipe\_conda\_env} GitHub package.
 
 The possible options should be:
 
@@ -219,9 +238,8 @@ The possible options should be:
 \item deploy/activate the tip of \textit{scipipe\_conda\_env} master
 \end{itemize}
 
-The environment will have a unique name, not the fixed one that is currently used.
-
 This can be done with the following changes in lsstsw package.
+
 
 \subsubsection{Update deploy Command} \label{sec:deploy}
 
@@ -231,6 +249,8 @@ The default behavior should be the same as now. If no envref is provided, the us
 
 In case the envref is \textit{master}, it shall deploy the latest master, if not already deployed.
 In this way, this option can be used to check if there is a newer master version of the conda environment and deploy it.
+
+The environment shall have a unique name, not the fixed one that is currently used.
 
 
 \subsubsection{Update rebuild Command} \label{sec:rebuild}
@@ -271,14 +291,10 @@ In this way it will be possible to verify that the science pipelines builds with
 
 \subsection{Conda Packaging 3rd Party Libraries} \label{sec:3rdpkgs}
 
-The 3rd party libraries included in the conda environment at today March 2019, are all stable and do not require specific build nor customization.
-
 Some of the packages listed in appendix \ref{sec:tomove} are already available in conda-forge channel or \textit{PyPi} (see following \ref{sec:pypi}).
-They are now included in the science pipelines stack as EUPS packages since when they were initially needed, they were not available in any conda channels, or it was simpler to handle as EUPS packages.
+They are now included in the science pipelines stack as EUPS packages since when they were initially needed, they were not available in any conda channels.
 
-Some other packages require to be updated more often, therefore they have been included as EUPS packages, since the conda environment is not sufficiently dynamic.
-
-The packages that are not stable, and may required a considerable number of changes during the time, it is recommended to keep them as EUPS packages and therefore included in the science pipelines stack.
+Some other packages require to be updated more often, therefore they have been included as EUPS packages, since the Conda environment is not sufficiently dynamic.
 
 
 \subsubsection{Conda Packages Managed by DM} \label{sec:3rddmpkgs}
