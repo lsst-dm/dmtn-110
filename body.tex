@@ -1,11 +1,11 @@
 \section{Introduction} \label{sec:intro}
 
-The proposal made in this document is oriented to have a more functional approach in the environment management for science pipelines builds.
+The proposal made in this document is oriented to have a more functional approach in the environment management for Science Pipelines builds.
 
-The benefits that can be obtained by implementing this proposal are mainly for developers, who will have more control over the environments they are using. 
-This will permit a more dynamic evolution of the used environment, therefore to change more often packages available in the public Conda channels. This is the case with \textit{numpy} where new releases are usually binary incompatible.
+The benefits that can be obtained implementing this proposal are mainly for developers, who will have more control over the environments they are using. 
+This will permit a more dynamic evolution of the used environment, therefore more often upgrade to newer version of the packages. 
 
-The release process will  benefit as the global build time for the science pipelines  will be reduced. 
+The release process will  benefit as the global build time for the Science Pipelines  will be reduced. 
 Reduced build times allows more frequent releases. 
 This will be very important during commissioning and first operations phase, when multiple releases per day can be needed.
 
@@ -32,7 +32,7 @@ An environment is usually needed in the following contexts:
 \begin{itemize}
 \item software development: the environment includes all libraries and tools required to build and debug a software product
 \item software test and verification: the environment includes, on top of build and debug tools, additional tools to permit/facilitate the testing and validation activities.
-\item operations: the environment shall include only tools required for the execution of the operational product. It shall not contain any build or debug tool. It shall be optimized for the operational activities. \footnote{In case a problem is found in operation the first thing to do is to replicate it in a different environment, where also debug and further analysis is possible.}
+\item operations: the environment shall include only tools required for the execution of the operational products. It shall not contain any build or debug tool. It shall be optimized for the operational activities. \footnote{In case a problem is found in operation the first thing to do is to replicate it in a different environment, where also debug and further analysis is possible.}
 \end{itemize}
 
 These are the most common uses of an environment. Additional scenarios can be identified depending on the needs.
@@ -50,7 +50,7 @@ The following activities are done on a SW Product:
 \item test activities, usually unit tests and system test
 \item release activities
 \item packaging activities
-\item operational activities, in stand alone, in an operational pipeline, or as part of a service. Some SW Products are libraries, therefore are not operationally, but used as dependencies by other Software Products.
+\item operational activities, in stand alone mode, in an operational pipeline or as part of a service. Some SW Products are libraries, therefore are not operationally, but used as dependencies by other Software Products.
 \end{itemize}
 
 A Software Product shall correspond to a single repository (git package). All its dependences are also a Software Product and therefore released separately. However, this is not the case for DM.
@@ -74,7 +74,7 @@ Test data should also not be included in a Software Product. However including s
 \subsection{Software Release} \label{sec:defrelease}
 
 A software release is a consciously identified tag of a Software Product repository documented with a software release note.
-The identifier is usually of the form M.n.p.
+The identifier is usually of the form \texttt{M.n.p}.
 
 The tag in the Github repository and the software release note shall be sufficient to identify the release, and therefore for a developer
 to resolve the dependencies, build the binaries and execute the software.
@@ -101,7 +101,7 @@ As of March 2019, the following steps are used to configure a build workspace fo
 
 This will make available locally all tooling required to build the science pipelines source code using the command \texttt{rebuild <-r ref> lsst\_distrib}.
 
-The environment deployed and activate using the above steps corresponds to a fixed revision fo the \textit{scipipe\_conda\_env} git package.
+The environment deployed and activate using the above steps corresponds to a fixed revision of the \textit{scipipe\_conda\_env} git package.
 This revision is hardcoded in the \textit{lsstsw} build tool. It is also hardcoded in the continuous integration scripts versioned in the \textit{jenkins-dm-jobs} GitHub repository.
 
 
@@ -114,16 +114,16 @@ The instantiation of the work space is described in the \url{pipelines.lsst.io} 
 
 \begin{itemize}
 \item download from GitHub the \textit{newinstall.sh} script in an empty folder.
-\item execute the script; if the options \textit{-ct} are give, binary packages will be downloaded from EUPS instead of building the source. The execution will create an additional shell script, \textit{loadLSST.bash}, to be execute to activate the Conda environment. The script is generated in different shell flavors also: csh, ksh and zsh.
+\item execute the script: it will deploy the tools and the environment needed for the build. It will also create an additional shell script, \textit{loadLSST.bash}, to be execute to activate the Conda environment. The script is generated different shell flavors also: csh, ksh and zsh.
 \item source the \textit{loadLSST.bash} script in order to activate the environment 
 \end{itemize}
 
-The workspace will be ready to run \texttt{eups distrib install ....} builds.
+The workspace will be ready to build the Science Pipelines using \texttt{eups distrib install ....} builds. If \textit{newinstall.sh} has been execute with the options \textit{-ct}, binary packages will be downloaded from EUPS instead of building the source code, when building.
 
 Note that the Conda environment reference is hardcoded in the \textit{newinstall.sh} script.
 
 The script may have changed from one week to an other.
-This imply that each EUPS weekly build may work only with its corresponding \textit{nrewinstall.sh}.
+This imply that each EUPS weekly build may work only with its corresponding \textit{newinstall.sh}.
 
 
 \subsection{Conda Environment Management} \label{sec:condaenv}
@@ -134,14 +134,14 @@ These packages are resolved by Conda from the default channels.
 The $scipipe\_conda\_env$ repository includes two different types of environment definition:
 
 \begin{itemize}
-\item {\bf bleed}: the list of the Conda packages that are required by the science pipelines. No version is specified.
+\item {\bf bleed}: the list of the Conda packages that are required by the Science Pipelines. No version is specified.
 \item {\bf pinned}: the list of all Conda packages resolved in the environment. This includes the bleed packages and all required dependencies resolved automatically by Conda. The precise resolved version is given for each package listed in the file.
 \end{itemize}
 
-The \textit{pinned} version of the environment definition is the one used to instantiate the environment for the Science Pipelines build as specified in section \ref{sec:envset}.
+The \textit{pinned} version of the environment definition is the one used to instantiate the environment for the Science Pipelines build as specified in sections \ref{sec:envset} and \ref{sec:distrib}.
 
-The \textit{bleed} version is used to update the \textit{pinned} definition to the latest packages version that have been made available in the public conda channels since the previous update.
-The \textit{pinned} file is usually updated every 6 months approximately.
+The \textit{bleed} version is used to update the \textit{pinned} definition to the latest packages version that have been made available in the public Conda channels since the previous update.
+The \textit{pinned} file is updated every 6 months approximately.
 
 For the \textit{linux} platform, an extra package is required, \textit{nomkl}\footnote{See Jira{DM-8146}}. For this reason two different bleed files and two different pinned files are provided.
 
@@ -173,8 +173,8 @@ The expected benefits are:
 
 \begin{itemize}
 \item more efficient environment management;
-\item reduced build time and therefore easier to release the Science Pipelines
-\item have a more stable build system, since reducing the package to build every time will reduce the possibility of random failures.
+\item reduced build time and therefore easier to release the Science Pipelines;
+\item have a more stable build system, since reducing the number of package to build every time will reduce the possibility of random failures.
 \end{itemize}
 
 
@@ -192,7 +192,7 @@ The tools used should be able to deploy and activate a different environment, wi
 In some cases, the science pipelines build is failing due to some packages misalignment. 
 It is very common to see support requests on \textit{slack} channels, that end up been a problem of Conda environment.
 
-Since a developer is not constraint to use the recommended environment, there should be an easy way to compare the active environment  with a reference one, locally deployed or a reference in \textit{scipipe\_conda\_env} git package.
+Since developers are not constrained to use the recommended environment, there should be an easy way to compare the active environment  with a reference one, locally deployed or a reference in \textit{scipipe\_conda\_env} git package.
 
 
 \subsection{Missing Usecases}
@@ -203,10 +203,10 @@ As a result of the problems exposed above, following use cases should be taken i
 \item be able to deploy a new Conda environment without the need to update and have a new clone of \textit{lsstsw}.
 \item be able to activate different Conda environments using a \textit{lsstsw} command.
 \item be able to check the differences between Conda environments.
-\item record which Conda environment has been used for a specific build, and been able to activate it again.
+\item record which Conda environment has been used for a specific build, \textit{lsstsw} \texttt{rebuild}, and be able to activate it again.
 \item be able to activate the correct environment before running and EUPS build using \texttt{eups distrib install}.
 \item be able to run a CI build using a specific environment reference.
-\item be able to manage Conda packages for some third party libraries that requires light customization.
+\item be able to manage Conda packages for the third party libraries that requires DM rebuild or customization.
 \end{itemize}
 
 
@@ -219,7 +219,7 @@ Here follows the proposed changes required to satisfy the usecases from the prev
 
 The package \textit{scipipe\_conda\_env} to be tagged in GitHub for each weekly and each time an EUPS build is created.
 This will guarantee that each EUPS weekly build will have a corresponding well known Conda environment, that can be used for rebuilt them. 
-The Conda environmemt tag shall be in line with the EUPS tag. The SHA1 can be identified also, but should not be necessary.
+The Conda environmemt tag shall be in line with the EUPS tag. The SHA1 can be identified also, but should not be strictly needed.
 
 All changes implemented in the \textit{scipipe\_conda\_env} repository shall follow the usual development process.  
 The tooling improvements proposed bellow, will permit the validation of those changes and include them in the development workflow.
@@ -257,7 +257,9 @@ The environment shall have a unique name, not the fixed one that is currently us
 
 The \textbf{rebuild} command should record the environment reference used for each build.
 
-This will permit in the future to retrieve the information, in order to activate manually the same conda environment if required.
+This will permit in the future to retrieve the information, in order to manually activate the same conda environment before running a build.
+
+The \textbf{rebuild} command could also raise a warning, in case the active environment is different from the one previously used.
 
 
 \subsubsection{New envconfig Command} \label{sec:envconfig}
@@ -269,7 +271,7 @@ It shall accept one of following options:
 \begin{itemize}
 \item a \textit{scipipe\_conda\_env} environment reference to activate
 \item an existing build number, in order to activate the environment that has been used for that build.
-\item list the available environments
+\item list the available environments, ready to be activated
 \item compare the active environment with an other one, a \textit{scipipe\_conda\_env} reference or a deployed environment
 \end{itemize}
 
@@ -291,20 +293,24 @@ In this way it will be possible to verify that the science pipelines builds with
 
 \subsection{Conda Packaging 3rd Party Libraries} \label{sec:3rdpkgs}
 
-Some of the packages listed in appendix \ref{sec:tomove} are already available in conda-forge channel or \textit{PyPi} (see following \ref{sec:pypi}).
-They are now included in the science pipelines stack as EUPS packages since when they were initially needed, they were not available in any conda channels.
+Some of the packages listed in appendix \ref{sec:tomove} are already available in Conda public channels or \textit{PyPi} (see following \ref{sec:pypi}).
+They are now included in the Science Pipelines stack as EUPS packages since when they were initially needed, they were not available in any Conda channels.
 
 Some other packages require to be updated more often, therefore they have been included as EUPS packages, since the Conda environment is not sufficiently dynamic.
+
+Packages that requires customization, need to remain part of the stack, at least in a first phase.
+
+A small team shall be defined in DM to maintain the environment and the needed Conda recipes.
 
 
 \subsubsection{Conda Packages Managed by DM} \label{sec:3rddmpkgs}
 
-For all the packages that are not already available in a public channel, some work need to be done in order to provide and maintain a proper recipe.
+DM shall use the packages from the Conda public channels, if available.
 
-These packages shall have a different name, in order to identify them as special packages produced for DM usage.
-If the \textit{conda-forge} channel cannot be used, a specific lsst-dm channel shall be created.
+DM shall maintain a Conda recipes for all those packages that are not available in Conda / PyPi, or that requires to be rebuild with a specific flag. This is the case of \textit{boost}.
+These packages shall have a specific naming convention, so it will be clear they have been \textit{re-packaged} by LSST DM.
 
-The DM packages shall be dismissed, not maintained anymore, as soon as the needed changes have been incorporated and made available in the official conda distribution.
+A DM maintained Conda package shall be dismissed, not maintained anymore, as soon as the corresponding package available in the public Conda channel can be used in the Science Pipelines build.
 
 
 \subsubsection{PyPi Packages} \label{sec:pypi}
@@ -312,9 +318,9 @@ The DM packages shall be dismissed, not maintained anymore, as soon as the neede
 The conda environment definition files in \textit{scipipe\_conda\_env} can accept also pip package. 
 
 This implies that packages available in \textit{PyPi} package repository and that can be installed in the environment. 
-However, if available, the preference shall be given to the conda package.
+However, if available, the preference shall be given to the Conda package.
 
-In case the pip package will bring into the environment too many PyPi dependencies, DM can decide to maintain a DM recipe for them.
+In case a pip package will bring into the environment too many PyPi dependencies, DM can decide to maintain a Conda recipe for it.
 
 
 \subsection{Change Control}
@@ -328,10 +334,11 @@ Each package shall have an internal reference person.
 \newpage
 \section{Further Improvements}
 
-Considering the inclusion of the 3rd party libraries listed in appendix \ref{sec:tomove} as a first step, follows a list of activities that can improve the overall DM codebase management and increase its availability.
+Considering the inclusion of the 3rd party libraries listed in appendix \ref{sec:tomove} as a first step, follows a list of activities that can improve the overall DM codebase management and facilitate the development activities.
 
 \begin{itemize}
 \item create conda packages for the main DM tools used for the build process, such as EUPS, sconsUtils, lsst\_build. 
+\item include in the Conda environment those third party libraries that are customized by DM with specific code changes, such as \textit{starlink\_ast}.
 \item create conda packages for all DM software.
 \end{itemize}
 
