@@ -70,6 +70,8 @@ These elements shall follow a parallel development / release process.
 
 Test data should also not be included in a Software Product. However including small datasets for enabling the unit tests is not a bad practice.
 
+The content of this subsection is a \textit{prerequisite} for any release procedure to be applied.
+
 
 \subsection{Software Release} \label{sec:defrelease}
 
@@ -327,6 +329,8 @@ In case a pip package will bring into the environment too many PyPi dependencies
 
 Since maintaining conda recipes may require a considerable amount of effort, the DMCCB shall monitor when new packages are added to the environment or are used in the codebase.
 
+Changes to the environment shall be proposed using RFC Jira issues.
+
 Third party packages shall also be censed and documented together with the DM product tree. 
 Each package shall have an internal reference person.
 
@@ -339,6 +343,7 @@ Considering the inclusion of the 3rd party libraries listed in appendix \ref{sec
 \begin{itemize}
 \item create conda packages for the main DM tools used for the build process, such as EUPS, sconsUtils, lsst\_build. 
 \item include in the Conda environment those third party libraries that are customized by DM with specific code changes, such as \textit{starlink\_ast}.
+\item define environments for different uses, for example development and software debug, operations, science data analysis, etc.
 \item create conda packages for all DM software.
 \end{itemize}
 
