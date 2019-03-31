@@ -149,7 +149,7 @@ For the \textit{linux} platform, an extra package is required, \textit{nomkl}\fo
 
 
 \newpage
-\section{Problems}
+\section{Problems} \label{sec:problems}
 
 \subsection{Large Numbers of Packages} \label{sec:high}
 
@@ -293,6 +293,16 @@ The Jenkins jobs, for example \textit{run-rebuild}, shall be updated in order to
 In this way it will be possible to verify that the science pipelines builds with a new environment.
 
 
+\newpage
+\section{Following activities}
+
+The changes proposed in the previous section \ref{sec:proposed} can be implemented with very minimum impact to the day by day activities.
+
+The new functionalities introduced, can facilitate already the management of the conda environment as it is done now, and the development activities in general.
+
+However, the resolution of the problems exposed in \ref{sec:problems}, requires the reduction of the number of packages included in the shared stack, moving third party libraries in the conda environment.
+
+
 \subsection{Conda Packaging 3rd Party Libraries} \label{sec:3rdpkgs}
 
 Some of the packages listed in appendix \ref{sec:tomove} are already available in Conda public channels or \textit{PyPi} (see following \ref{sec:pypi}).
@@ -335,8 +345,7 @@ Third party packages shall also be censed and documented together with the DM pr
 Each package shall have an internal reference person.
 
 
-\newpage
-\section{Further Improvements}
+\subsection{More Packages to Conda}
 
 Considering the inclusion of the 3rd party libraries listed in appendix \ref{sec:tomove} as a first step, follows a list of activities that can improve the overall DM codebase management and facilitate the development activities.
 
