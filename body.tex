@@ -12,7 +12,9 @@ This will be very important during commissioning and first operations phase, whe
 In this moment there are a few \textit{stubs} as EUPS package that are not always working as expected.
 Implementing this proposal will remove these packages and the overall build process will be more robust.
 
-The effort required to implement this proposal is mainly limited to a small team, that shall take ownership of the environment management activities.
+Implementing this procedure will have very low impact on the DM development team.
+The immediate benefit will be a better management of the conda environment.
+Activities documented in section \ref{sec:follows} can be scheduled afterward, depending on resource availability and avoiding impacts on project milestones.
 
 
 \subsection{Applicable Documents}
@@ -53,11 +55,16 @@ The following activities are done on a SW Product:
 \item operational activities, in stand alone mode, in an operational pipeline or as part of a service. Some SW Products are libraries, therefore are not operationally, but used as dependencies by other Software Products.
 \end{itemize}
 
-A Software Product shall correspond to a single repository (git package). All its dependences are also a Software Product and therefore released separately. However, this is not the case for DM.
+A Software Product shall correspond to a single repository. 
+In other  words, there shall be a correspondence \textit{1:1} between Software Products and git packages.
+All the Software Prouct dependences are different Software Products and therefore released separately.
 
-In DM, where a Software Product is comprised of multiple git packages, a GitHub \textit{metapackage} is used to identify the Software Product.
+This is not the case of DM, where a Software Product is comprised of multiple git packages.
+The compromised solution in this case is to have a GitHub \textit{metapackage} that identify the Software Product.
 All git packages composing the Software Product are dependencies in a GitHub \textit{metapackage} and released at the same time.
 In this case, a git package shall be related only to one Software Product, and it is not by himself a Software Product.
+In other words, there is a correspondence \textit{1:many} between Software Product and Git packages. 
+There shall never be a \textit{many:many} correspondence.
 
 The following elements should not be part of a Software Product:
 
@@ -82,6 +89,8 @@ The tag in the Github repository and the software release note shall be sufficie
 to resolve the dependencies, build the binaries and execute the software.
 
 The software release is a monolithic snapshot of the Software Product to be used as is, or in its corresponding binary package(s), by the downstream processes or users.
+In theory, it should be possible to identify the release with a checksum calculated automatically on the delivered package.
+That checksum can be used to identify the release installed in an environment, or included in a distribution.
 
 
 \subsection{Third Party Packages}
@@ -151,7 +160,25 @@ For the \textit{linux} platform, an extra package is required, \textit{nomkl}\fo
 \newpage
 \section{Problems} \label{sec:problems}
 
-\subsection{Large Numbers of Packages} \label{sec:high}
+
+\subsection{Static Environment} \label{sec:static}
+
+As described in section \ref{sec:actual}, the environment deployed and activated using the actual version of the tooling is hardcoded in a few places.
+
+This implies that, each time the environment is updated, the hardcoded value need to be updated, the tools redeployed, and restart from scratch any build or development activities.
+
+The tools used should be able to deploy and activate a different environment, without the need to have it hardcoded.
+
+
+\subsection{Unknown Environment Status} \label{sec:unknown}
+
+In some cases, the science pipelines build is failing due to some packages misalignment. 
+It is very common to see support requests on \textit{slack} channels, that end up been a problem of Conda environment.
+
+Since developers are not constrained to use the recommended environment, there should be an easy way to compare the active environment  with a reference one, locally deployed or a reference in \textit{scipipe\_conda\_env} git package.
+
+
+\subsection{High Time to Rebuild} \label{sec:high}
 
 The 17.0 release of the Science Pipelines stack comprises 128 packages.
 
@@ -161,6 +188,7 @@ Each time a release or a release candidate are created, they are rebuilt also, w
 Many of these packages are 3rd party libraries that are not available in the public Conda channels, or that require some changes in order to be used in the Science Pipelines stack.
 
 These packages are not DM software, they are not formally part of the release, and they should be considered as part of the Conda environment.
+Moving them to the conda environment will decrease the build time and improve the release as is.
 
 In order to move these packages to the Conda environment, there are two problems:
 
@@ -178,23 +206,6 @@ The expected benefits are:
 \item reduced build time and therefore easier to release the Science Pipelines;
 \item have a more stable build system, since reducing the number of package to build every time will reduce the possibility of random failures.
 \end{itemize}
-
-
-\subsection{Static Environment} \label{sec:static}
-
-As described in section \ref{sec:actual}, the environment deployed and activated using the actual version of the tooling is hardcoded in a few places.
-
-This implies that, each time the environment is updated, the hardcoded value need to be updated, the tools redeployed, and restart from scratch any build or development activities.
-
-The tools used should be able to deploy and activate a different environment, without the need to have it hardcoded.
-
-
-\subsection{Unknown Environment Status} \label{sec:unknown}
-
-In some cases, the science pipelines build is failing due to some packages misalignment. 
-It is very common to see support requests on \textit{slack} channels, that end up been a problem of Conda environment.
-
-Since developers are not constrained to use the recommended environment, there should be an easy way to compare the active environment  with a reference one, locally deployed or a reference in \textit{scipipe\_conda\_env} git package.
 
 
 \subsection{Missing Usecases}
@@ -294,7 +305,7 @@ In this way it will be possible to verify that the science pipelines builds with
 
 
 \newpage
-\section{Following activities}
+\section{Following activities} \label{sec:follows}
 
 The changes proposed in the previous section \ref{sec:proposed} can be implemented with very minimum impact to the day by day activities.
 
