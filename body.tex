@@ -2,15 +2,15 @@
 
 The proposal made in this document is oriented to have a more functional approach in the environment management for Science Pipelines builds.
 
-The benefits that can be obtained implementing this proposal are mainly for developers, who will have more control over the environments they are using. 
-This will permit a more dynamic evolution of the used environment, therefore more often upgrade to newer version of the packages. 
+The benefits that can be obtained by implementing this proposal are mainly for developers, who will have more control over the environments they are using. 
+This will permit a more dynamic evolution of the used environment, allowing more frequent upgrades to newer versions of packages in the environment. 
 
 The release process will  benefit as the global build time for the Science Pipelines  will be reduced. 
-Reduced build times allows more frequent releases. 
-This will be very important during commissioning and first operations phase, when multiple releases per day can be needed.
+A reduced build time allows more frequent releases and faster development turnaround both locally and using continuous integration.
+This will be very important during commissioning and the initial operations phase, when multiple releases per day can be needed.
 
-In this moment there are a few \textit{stubs} as EUPS package that are not always working as expected.
-Implementing this proposal will remove these packages and the overall build process will be more robust.
+At the moment there are few EUPS packages \textit{stubs} that are not always working as expected.
+Implementing this proposal will remove these packages, and the overall build process will be more robust.
 
 Implementing this procedure will have very low impact on the DM development team.
 The immediate benefit will be a better management of the conda environment.
@@ -272,12 +272,14 @@ The \textbf{rebuild} command should record the environment reference used for ea
 
 This will permit in the future to retrieve the information, in order to manually activate the same conda environment before running a build.
 
-The \textbf{rebuild} command could also raise a warning, in case the active environment is different from the one previously used.
+The \textbf{rebuild} command could also raise a warning, in case the active environment is different from the one used previously on the same package.
+However this is not a problem related to the environment management but a potential improvement in the build tooling.
 
 
 \subsubsection{New envconfig Command} \label{sec:envconfig}
 
-A new command shall be added, that permits to choose which environment to activate.
+A new command shall be added, that permits to choose an available environment to activate.
+The environment need to be already available locally, deployed for example with \textit{deploy} command describe abode in ref{sec:deploy}.
 
 It shall accept one of following options:
 
@@ -307,9 +309,9 @@ In this way it will be possible to verify that the science pipelines builds with
 \newpage
 \section{Following activities} \label{sec:follows}
 
-The changes proposed in the previous section \ref{sec:proposed} can be implemented with very minimum impact to the day by day activities.
+The changes proposed in the previous section \ref{sec:proposed} can be implemented with minimal impact to the day to day activities.
 
-The new functionalities introduced, can facilitate already the management of the conda environment as it is done now, and the development activities in general.
+The new functionalities introduced can already facilitate the management of the conda environment and development activities in general.
 
 However, the resolution of the problems exposed in \ref{sec:problems}, requires the reduction of the number of packages included in the shared stack, moving third party libraries in the conda environment.
 
@@ -321,7 +323,8 @@ They are now included in the Science Pipelines stack as EUPS packages since when
 
 Some other packages require to be updated more often, therefore they have been included as EUPS packages, since the Conda environment is not sufficiently dynamic.
 
-Packages that requires customization, need to remain part of the stack, at least in a first phase.
+Packages that require customizations with substantial code changes, need to remain part of the stack, at least in a first phase. 
+Packges that require minor patches can be handled by a new recipe.
 
 A small team shall be defined in DM to maintain the environment and the needed Conda recipes.
 
@@ -352,7 +355,7 @@ Since maintaining conda recipes may require a considerable amount of effort, the
 
 Changes to the environment shall be proposed using RFC Jira issues.
 
-Third party packages shall also be censed and documented together with the DM product tree. 
+Third party packages shall also be documented and included the DM product tree. 
 Each package shall have an internal reference person.
 
 
