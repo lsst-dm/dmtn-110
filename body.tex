@@ -23,79 +23,15 @@ Activities documented in section \ref{sec:follows} can be scheduled afterward, d
 
 \subsection{Definitions}
 
-This document uses certain terms which are often overloaded. In this section we define these terms  as intended in this document.
+Following terms are used in this document which are often overloaded.
 
-\subsubsection{Environment} \label{sec:envdef}
-
-An environment is a set of libraries, executables and configurations, that are predefined for a specific context or function.
-
-An environment is usually needed in the following contexts:
+Please refer to \citeds{DMTN-106} draft (branch \textbf{review} \url{https://dmtn-106.lsst.io/v/review/index.html}), section 2, where their definition if under consolidation.
 
 \begin{itemize}
-\item software development: the environment includes all libraries and tools required to build and debug a software product
-\item software test and verification: the environment includes, on top of build and debug tools, additional tools to permit/facilitate the testing and validation activities.
-\item operations: the environment shall include only tools required for the execution of the operational products. It shall not contain any build or debug tool. It shall be optimized for the operational activities. \footnote{In case a problem is found in operation the first thing to do is to replicate it in a different environment, where also debug and further analysis is possible.}
+\item \textbf{Environment} \citeds{DMTN-106}, subsection 2.1 \label{sec:envdef}
+\item \textbf{Software Product} \citeds{DMTN-106}, subsection 2.2 \label{sec:swdef}
+\item \textbf{Software Release} \citeds{DMTN-106}, subsection 2.4 \label{sec:defrelease}
 \end{itemize}
-
-These are the most common uses of an environment. Additional scenarios can be identified depending on the needs.
-
-In some cases, for simplicity, the same environment is used in development, tests and operations, but this does not justify the inclusion of the environment definition in the Software Product itself.
-
-
-\subsubsection{Software Product} \label{sec:swdef}
-
-A Software Product is a component of the subsystem (DM) product tree.
-
-The following activities are done on a SW Product:
-\begin{itemize}
-\item development activities
-\item test activities, usually unit tests and system test
-\item release activities
-\item packaging activities
-\item operational activities, in stand alone mode, in an operational pipeline or as part of a service. Some SW Products are libraries, therefore are not operationally, but used as dependencies by other Software Products.
-\end{itemize}
-
-A Software Product shall correspond to a single repository. 
-In other  words, there shall be a correspondence \textit{1:1} between Software Products and git packages.
-All the Software Prouct dependences are different Software Products and therefore released separately.
-
-This is not the case of DM, where a Software Product is comprised of multiple git packages.
-The compromised solution in this case is to have a GitHub \textit{metapackage} that identify the Software Product.
-All git packages composing the Software Product are dependencies in a GitHub \textit{metapackage} and released at the same time.
-In this case, a git package shall be related only to one Software Product, and it is not by himself a Software Product.
-In other words, there is a correspondence \textit{1:many} between Software Product and Git packages. 
-There shall never be a \textit{many:many} correspondence.
-
-The following elements should not be part of a Software Product:
-
-\begin{itemize}
-\item build tools, otherwise we will have build tools deployed in operations.
-\item environment definition, since the environment depends on the final instantiation of the Software Product that are not visible in the development phase.
-\end{itemize}
-
-These elements shall follow a parallel development / release process.
-
-Test data should also not be included in a Software Product. However including small datasets for enabling the unit tests is not a bad practice.
-
-The content of this subsection is a \textit{prerequisite} for any release procedure to be applied.
-
-
-\subsection{Software Release} \label{sec:defrelease}
-
-A software release is a consciously identified tag of a Software Product repository documented with a software release note.
-The identifier is usually of the form \texttt{M.n.p}.
-
-The tag in the Github repository and the software release note shall be sufficient to identify the release, and therefore for a developer
-to resolve the dependencies, build the binaries and execute the software.
-
-The software release is a monolithic snapshot of the Software Product to be used as is, or in its corresponding binary package(s), by the downstream processes or users.
-In theory, it should be possible to identify the release with a checksum calculated automatically on the delivered package.
-That checksum can be used to identify the release installed in an environment, or included in a distribution.
-
-
-\subsection{Third Party Packages}
-
-Third party packages are those packages that are not developed in DM, and follow their own documentation and release process.
 
 
 \newpage
@@ -112,14 +48,14 @@ As of March 2019, the following steps are used to configure a build workspace fo
 
 This will make available locally all tooling required to build the science pipelines source code using the command \texttt{rebuild <-r ref> lsst\_distrib}.
 
-The environment deployed and activate using the above steps corresponds to a fixed revision of the \textit{scipipe\_conda\_env} git package.
+The environment deployed and activate using the above steps corresponds to a fixed revision of the \textit{scipipe\_conda\_env} Git package.
 This revision is hardcoded in the \textit{lsstsw} build tool. It is also hardcoded in the continuous integration scripts versioned in the \textit{jenkins-dm-jobs} GitHub repository.
 
 
 \subsection{Science Pipelines Distribution} \label{sec:distrib}
 
 Following the instructions provided in \url{pipelines.lsst.io}, it is possible to configure a build workspace using the \textit{newinstall.sh} script.
-This script is available in the \textit{lsst/lsst} git repository and it is tagged weekly together with the Science Pipelines weekly build.
+This script is available in the \textit{lsst/lsst} Git repository and it is tagged weekly together with the Science Pipelines weekly build.
 
 The instantiation of the work space is described in the \url{pipelines.lsst.io} documentation page, and can be summarized as follows:
 
@@ -175,17 +111,17 @@ The tools used should be able to deploy and activate a different environment, wi
 In some cases, the science pipelines build is failing due to some packages misalignment. 
 It is very common to see support requests on \textit{slack} channels, that end up been a problem of Conda environment.
 
-Since developers are not constrained to use the recommended environment, there should be an easy way to compare the active environment  with a reference one, locally deployed or a reference in \textit{scipipe\_conda\_env} git package.
+Since developers are not constrained to use the recommended environment, there should be an easy way to compare the active environment  with a reference one, locally deployed or a reference in \textit{scipipe\_conda\_env} Git package.
 
 
 \subsection{High Time to Rebuild} \label{sec:high}
 
-The 17.0 release of the Science Pipelines stack comprises 128 packages.
+The 17.0 release of the Science Pipelines Stack comprises 128 packages.
 
 All packages are rebuilt all the times a new \textit{lsstsw} development workspace is configured. 
 Each time a release or a release candidate are created, they are rebuilt also, with the effect to slow down considerably the release process.
 
-Many of these packages are 3rd party libraries that are not available in the public Conda channels, or that require some changes in order to be used in the Science Pipelines stack.
+Many of these packages are 3rd party libraries that are not available in the public Conda channels, or that require some changes in order to be used in the Science Pipelines Stack.
 
 These packages are not DM software, they are not formally part of the release, and they should be considered as part of the Conda environment.
 Moving them to the conda environment will decrease the build time and improve the release as is.
@@ -319,7 +255,7 @@ However, the resolution of the problems exposed in \ref{sec:problems}, requires 
 \subsection{Conda Packaging 3rd Party Libraries} \label{sec:3rdpkgs}
 
 Some of the packages listed in appendix \ref{sec:tomove} are already available in Conda public channels or \textit{PyPi} (see following \ref{sec:pypi}).
-They are now included in the Science Pipelines stack as EUPS packages since when they were initially needed, they were not available in any Conda channels.
+They are now included in the Science Pipelines Stack as EUPS packages since when they were initially needed, they were not available in any Conda channels.
 
 Some other packages require to be updated more often, therefore they have been included as EUPS packages, since the Conda environment is not sufficiently dynamic.
 
@@ -372,14 +308,14 @@ Considering the inclusion of the 3rd party libraries listed in appendix \ref{sec
 
 Implementing the first bullet should not require much effort, but will simplify the tooling we are using for instantiate a new development workspace, such as \textit{lsstsw/deploy} or \textit{newinstall.sh}.
 
-The second bulled is a long term activity, that will permit to apply semantic versioning to each git package, and therefore have proper dependency management.
+The second bulled is a long term activity, that will permit to apply semantic versioning to each Git package, and therefore have proper dependency management.
 
 
 \newpage
 \appendix
 \section{Packages to be Moved} \label{sec:tomove}
 
-The following (eups) packages are proposed to be moved from science pipelines to the conda environment:
+The following (EUPS) packages are proposed to be moved from science pipelines to the conda environment:
 
 \begin{itemize}
 \item apr (*)
