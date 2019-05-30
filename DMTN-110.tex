@@ -5,6 +5,9 @@
 
 % Local commands go here.
 
+\input meta.tex
+
+
 % To add a short-form title:
 \title{Conda Environment Proposal for Science Pipelines}
 
@@ -38,6 +41,8 @@ The effort required for its implementation is limited since it reuses all toolin
 
 \begin{document}
 
+\setDocUpstreamLocation{\url{https://github.com/lsst-dm/DMTN-110}}
+\setDocUpstreamVersion{\vcsrevision}
 \maketitle
 
 
@@ -47,10 +52,11 @@ The effort required for its implementation is limited since it reuses all toolin
 \appendix
 
 \section{References} \label{sec:bib}
-\bibliography{lsst,lsst-dm,refs_ads,refs,books}
+\bibliography{lsst,lsst-dm,refs_ads,refs,books,local}
 
 
 %Make sure lsst-texmf/bin/generateAcronyms.py is in your path
 \section{Acronyms used in this document}\label{sec:acronyms}
 \input{acronyms.tex}
+
 \end{document}
